@@ -259,6 +259,7 @@ plt.savefig('figures/project_1a_q1b_2.png')
 
 # Plot learning curves
 print('Final loss is {}'.format(losses[-1]))
+plt.clf()
 plt.plot(range(epochs), losses)
 plt.xlabel('Epoch number')
 plt.ylabel('Average epoch loss')
@@ -327,6 +328,7 @@ for batch_size in BATCH_SIZES:
 final_train_acc = []
 final_test_acc = []
 
+plt.clf()
 fig, ax = plt.subplots()
 for idx, batch_size in enumerate(BATCH_SIZES):
     ax.plot(range(epochs), batch_size_test_accs[idx], label="Batch size = " + str(batch_size))
@@ -342,6 +344,7 @@ plt.ylabel('Accuracy')
 plt.title('Learning curves of 3-layer NNs with different batch sizes')
 plt.savefig('figures/project_1a_q2a_1.png')
 
+plt.clf()
 fig2, ax2 = plt.subplots()
 ax2.plot([str(batch_size) for batch_size in BATCH_SIZES], final_train_acc, 'xb-', label="Final Train Accuracy")
 ax2.plot([str(batch_size) for batch_size in BATCH_SIZES], final_test_acc, 'xr-', label="Final Test Accuracy")
@@ -353,6 +356,7 @@ plt.title('Accuracies of 3-layer NNs with different batch sizes')
 plt.savefig('figures/project_1a_q2a_2.png')
 
 # Plot loss
+plt.clf()
 fig, ax = plt.subplots()
 for idx, batch_size in enumerate(BATCH_SIZES):
     ax.plot(range(epochs), batch_losses[idx], label="Batch size = " + str(batch_size))
@@ -366,12 +370,14 @@ plt.savefig('figures/project_1a_q2a_3.png')
 
 # Plot the time taken
 print(batch_times)
+plt.clf()
 plt.plot([str(batch_size) for batch_size in BATCH_SIZES], batch_times)
 plt.xlabel('Batch size')
 plt.ylabel('Average time taken per epoch')
 plt.title('Duration per epoch with diff. batch sizes')
 plt.savefig('figures/project_1a_q2a_4.png')
 
+plt.clf()
 plt.plot(BATCH_SIZES, batch_times, 'xb-')
 plt.xlabel('Batch size')
 plt.ylabel('Average time taken per epoch')
@@ -390,6 +396,7 @@ print('Final training accuracy is {}'.format(train_acc[-1]))
 print('Final test accuracy is {}'.format(test_acc[-1]))
 print('Final loss is {}'.format(loss[-1]))
 
+plt.clf()
 fig, ax = plt.subplots()
 ax.plot(range(epochs), train_acc, label='Training')
 ax.plot(range(epochs), test_acc, label='Test')
@@ -457,6 +464,7 @@ for neuron_num in NEURON_NUMS:
 final_train_acc = []
 final_test_acc = []
 
+plt.clf()
 fig, ax = plt.subplots()
 for idx, neuron_num in enumerate(NEURON_NUMS):
     ax.plot(range(epochs), num_neuron_test_accs[idx], label="Number of neurons = " + str(neuron_num))
@@ -472,6 +480,7 @@ plt.ylabel('Accuracy')
 plt.title('Learning Curves of 3-layer NNs with diff. neuron numbers')
 plt.savefig('figures/project_1a_q3a_1.png')
 
+plt.clf()
 fig2, ax2 = plt.subplots()
 ax2.plot([str(neuron_num) for neuron_num in NEURON_NUMS], final_train_acc, 'xb-', label="Final Train Accuracy")
 ax2.plot([str(neuron_num) for neuron_num in NEURON_NUMS], final_test_acc, 'xr-', label="Final Test Accuracy")
@@ -483,6 +492,7 @@ plt.title('Accuracies of 3-layer NNs with diff. neuron numbers')
 plt.savefig('figures/project_1a_q3a_2.png')
 
 # Plot loss
+plt.clf()
 fig, ax = plt.subplots()
 for idx, neuron_num in enumerate(NEURON_NUMS):
     ax.plot(range(epochs), num_neuron_losses[idx], label="Number of neurons = " + str(neuron_num))
@@ -506,6 +516,7 @@ print('Final training accuracy is {}'.format(train_acc[-1]))
 print('Final test accuracy is {}'.format(test_acc[-1]))
 print('Final loss is {}'.format(loss[-1]))
 
+plt.clf()
 fig, ax = plt.subplots()
 ax.plot(range(epochs), train_acc, label='Training')
 ax.plot(range(epochs), test_acc, label='Test')
@@ -573,6 +584,7 @@ for decay_parameter in DECAY_PARAMETERS:
 final_train_acc = []
 final_test_acc = []
 
+plt.clf()
 fig, ax = plt.subplots()
 for idx, decay_parameter in enumerate(DECAY_PARAMETERS):
     ax.plot(range(epochs), decay_parameter_test_accs[idx], label="Decay parameter = " + str(decay_parameter))
@@ -588,6 +600,7 @@ plt.ylabel('Accuracy')
 plt.title('Learning Curves of 3-layer NNs with different decay params')
 plt.savefig('figures/project_1a_q4a_1.png')
 
+plt.clf()
 fig2, ax2 = plt.subplots()
 ax2.plot([str(decay_parameter) for decay_parameter in DECAY_PARAMETERS], final_train_acc, 'xb-', label="Final Train Accuracy")
 ax2.plot([str(decay_parameter) for decay_parameter in DECAY_PARAMETERS], final_test_acc, 'xr-', label="Final Test Accuracy")
@@ -599,6 +612,7 @@ plt.title('Accuracies of 3-layer NNs with different decay params')
 plt.savefig('figures/project_1a_q4a_2.png')
 
 # Plot loss
+plt.clf()
 fig, ax = plt.subplots()
 for idx, decay_parameter in enumerate(DECAY_PARAMETERS):
     print("Decay parameter = {} has loss {} after 5000 epochs.".format(decay_parameter, decay_parameter_losses[idx][-1]))
@@ -622,6 +636,7 @@ print('Final training accuracy is {}'.format(train_acc[-1]))
 print('Final test accuracy is {}'.format(test_acc[-1]))
 print('Final loss is {}'.format(loss[-1]))
 
+plt.clf()
 fig, ax = plt.subplots()
 ax.plot(range(epochs), train_acc, label='Training')
 ax.plot(range(epochs), test_acc, label='Test')
@@ -638,6 +653,7 @@ train_acc_4, test_acc_4, loss_4 = training(cv_and_trainX, cv_and_trainY, num_cla
                                            batch_size=32, no_of_layers=4, testX=testX, testY=testY, use_small_dataset=False)
 
 # Plot learning curves
+plt.clf()
 fig, ax = plt.subplots()
 print('Final training accuracy of optimized 3-layer NN is {}'.format(train_acc[-1]))
 print('Final test accuracy of optimized 3-layer NN is {}'.format(test_acc[-1]))
@@ -649,6 +665,7 @@ plt.ylabel('Accuracy')
 plt.title('Learning curve of optimized 3-layer NN')
 plt.savefig('figures/project_1a_q5_1.png')
 
+plt.clf()
 fig2, ax2 = plt.subplots()
 print('Final training accuracy of 4-layer NN is {}'.format(train_acc_4[-1]))
 print('Final test accuracy of 4-layer NN is {}'.format(test_acc_4[-1]))
@@ -660,6 +677,7 @@ plt.ylabel('Accuracy')
 plt.title('Learning curve of 4-layer NN')
 plt.savefig('figures/project_1a_q5_2.png')
 
+plt.clf()
 fig3, ax3 = plt.subplots()
 print('Final loss of 3-layer NN is {}'.format(loss[-1]))
 print('Final loss of 4-layer NN is {}'.format(loss_4[-1]))
@@ -671,6 +689,7 @@ plt.ylabel('Average epoch loss')
 plt.title('Loss of optimized 3-layer vs 4-layer NN')
 plt.savefig('figures/project_1a_q5_3.png')
 
+plt.clf()
 fig4, ax4 = plt.subplots()
 print('Final test accuracy of optimized 3-layer NN is {}'.format(test_acc[-1]))
 print('Final test accuracy of 4-layer NN is {}'.format(test_acc_4[-1]))
@@ -687,6 +706,7 @@ train_acc_4_opt, test_acc_4_opt, loss_4_opt = training(cv_and_trainX, cv_and_tra
                                                        decay_parameter=OPTIMAL_DECAY_PARAMETER,batch_size=OPTIMAL_BATCH_SIZE,
                                                        no_of_layers=4, testX=testX, testY=testY, use_small_dataset=False)
 
+plt.clf()
 fig, ax = plt.subplots()
 print('Final training accuracy of 4-layer NN is {}'.format(train_acc_4_opt[-1]))
 print('Final test accuracy of 4-layer NN is {}'.format(test_acc_4_opt[-1]))
@@ -698,6 +718,7 @@ plt.ylabel('Accuracy')
 plt.title('Learning curve of optimized 4-layer NN')
 plt.savefig('figures/project_1a_q5_5.png')
 
+plt.clf()
 fig2, ax2 = plt.subplots()
 print('Final loss of optimized 3-layer NN is {}'.format(loss[-1]))
 print('Final loss of optimized 4-layer NN is {}'.format(loss_4_opt[-1]))
@@ -709,6 +730,7 @@ plt.ylabel('Average epoch loss')
 plt.title('Loss of optimized 3-layer vs optimized 4-layer NN')
 plt.savefig('figures/project_1a_q5_6.png')
 
+plt.clf()
 fig3, ax3 = plt.subplots()
 print('Final test accuracy of optimized 3-layer NN is {}'.format(test_acc[-1]))
 print('Final test accuracy of optimized 4-layer NN is {}'.format(test_acc_4_opt[-1]))
