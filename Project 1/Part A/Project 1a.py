@@ -236,6 +236,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Accuracy')
 plt.title('Learning Curve of 3-layer NN with untuned hyperparameters')
 plt.savefig('figures/project_1a_q1a.png')
+fig.clf()
 
 fig, ax = plt.subplots()
 ax.plot(range(epochs)[1000:3001], train_acc[1000:3001], label='Training')
@@ -246,6 +247,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Accuracy')
 plt.title('Learning Curve of 3-layer NN with untuned hyperparameters [A]')
 plt.savefig('figures/project_1a_q1b_1.png')
+fig.clf()
 
 fig, ax = plt.subplots()
 ax.plot(range(epochs)[0:300], train_acc[0:300], label='Training')
@@ -256,6 +258,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Accuracy')
 plt.title('Learning Curve of 3-layer NN with untuned hyperparameters [B]')
 plt.savefig('figures/project_1a_q1b_2.png')
+fig.clf()
 
 # Plot learning curves
 print('Final loss is {}'.format(losses[-1]))
@@ -354,6 +357,7 @@ plt.xlabel('Batch size')
 plt.ylabel('Accuracy')
 plt.title('Accuracies of 3-layer NNs with different batch sizes')
 plt.savefig('figures/project_1a_q2a_2.png')
+fig2.clf()
 
 # Plot loss
 plt.clf()
@@ -367,6 +371,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Loss')
 plt.title('Losses of 3-layer NNs with diff. batch sizes')
 plt.savefig('figures/project_1a_q2a_3.png')
+fig.clf()
 
 # Plot the time taken
 print(batch_times)
@@ -406,6 +411,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Accuracy')
 plt.title('Learning curve of 3-layer NN with batch size {}'.format(OPTIMAL_BATCH_SIZE))
 plt.savefig('figures/project_1a_q2c.png')
+fig.clf()
 
 # QUESTION 3
 # Optimal number of hidden-layer neurons
@@ -479,6 +485,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Accuracy')
 plt.title('Learning Curves of 3-layer NNs with diff. neuron numbers')
 plt.savefig('figures/project_1a_q3a_1.png')
+fig.clf()
 
 plt.clf()
 fig2, ax2 = plt.subplots()
@@ -490,6 +497,7 @@ plt.xlabel('Number of hidden neurons')
 plt.ylabel('Accuracy')
 plt.title('Accuracies of 3-layer NNs with diff. neuron numbers')
 plt.savefig('figures/project_1a_q3a_2.png')
+fig2.clf()
 
 # Plot loss
 plt.clf()
@@ -503,6 +511,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Average epoch loss')
 plt.title('Losses of 3-layer NNs with diff. neuron numbers')
 plt.savefig('figures/project_1a_q3a_3.png')
+fig.clf()
 
 # Train with optimal batch size and number of neurons
 OPTIMAL_NEURON_NUM = 25
@@ -526,6 +535,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Accuracy')
 plt.title('Learning curve of 3-layer NN with {} hidden-layer neurons'.format(OPTIMAL_NEURON_NUM))
 plt.savefig('figures/project_1a_q3c.png')
+fig.clf()
 
 # QUESTION 4
 # Optimal decay parameter
@@ -599,6 +609,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Accuracy')
 plt.title('Learning Curves of 3-layer NNs with different decay params')
 plt.savefig('figures/project_1a_q4a_1.png')
+fig.clf()
 
 plt.clf()
 fig2, ax2 = plt.subplots()
@@ -610,6 +621,7 @@ plt.xlabel('Number of hidden neurons')
 plt.ylabel('Accuracy')
 plt.title('Accuracies of 3-layer NNs with different decay params')
 plt.savefig('figures/project_1a_q4a_2.png')
+fig2.clf()
 
 # Plot loss
 plt.clf()
@@ -623,6 +635,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Average epoch loss')
 plt.title('Losses of 3-layer NNs with different decay params')
 plt.savefig('figures/project_1a_q4a_3.png')
+fig.clf()
 
 # Train with optimal batch size and number of neurons
 OPTIMAL_DECAY_PARAMETER = 10 ** -6
@@ -646,6 +659,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Accuracy')
 plt.title('Learning curve of 3-layer NN with decay parameter = {}'.format(OPTIMAL_DECAY_PARAMETER))
 plt.savefig('figures/project_1a_q4c.png')
+fig.clf()
 
 # QUESTION 5
 # 4-layer neuron
@@ -664,6 +678,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Accuracy')
 plt.title('Learning curve of optimized 3-layer NN')
 plt.savefig('figures/project_1a_q5_1.png')
+fig.clf()
 
 plt.clf()
 fig2, ax2 = plt.subplots()
@@ -676,6 +691,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Accuracy')
 plt.title('Learning curve of 4-layer NN')
 plt.savefig('figures/project_1a_q5_2.png')
+fig2.clf()
 
 plt.clf()
 fig3, ax3 = plt.subplots()
@@ -688,6 +704,7 @@ plt.xlabel('Epoch number')
 plt.ylabel('Average epoch loss')
 plt.title('Loss of optimized 3-layer vs 4-layer NN')
 plt.savefig('figures/project_1a_q5_3.png')
+fig3.clf()
 
 plt.clf()
 fig4, ax4 = plt.subplots()
@@ -700,6 +717,7 @@ plt.xlabel('Epoch number')
 plt.ylabel('Test Accuracy')
 plt.title('Test Accuracy of optimized 3-layer vs 4-layer NN')
 plt.savefig('figures/project_1a_q5_4.png')
+fig4.clf()
 
 # Train with optimzed hyperparameters
 train_acc_4_opt, test_acc_4_opt, loss_4_opt = training(cv_and_trainX, cv_and_trainY, num_classes=OPTIMAL_NEURON_NUM,
@@ -717,6 +735,7 @@ plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Accuracy')
 plt.title('Learning curve of optimized 4-layer NN')
 plt.savefig('figures/project_1a_q5_5.png')
+fig.clf()
 
 plt.clf()
 fig2, ax2 = plt.subplots()
@@ -729,6 +748,7 @@ plt.xlabel('Epoch number')
 plt.ylabel('Average epoch loss')
 plt.title('Loss of optimized 3-layer vs optimized 4-layer NN')
 plt.savefig('figures/project_1a_q5_6.png')
+fig2.clf()
 
 plt.clf()
 fig3, ax3 = plt.subplots()
@@ -741,3 +761,4 @@ plt.xlabel('Epoch number')
 plt.ylabel('Test Accuracy')
 plt.title('Test Accuracy of optimized 3-layer vs optimized 4-layer NN')
 plt.savefig('figures/project_1a_q5_7.png')
+fig3.clf()
