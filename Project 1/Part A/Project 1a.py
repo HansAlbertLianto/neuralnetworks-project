@@ -603,7 +603,7 @@ fig, ax = plt.subplots()
 for idx, decay_parameter in enumerate(DECAY_PARAMETERS):
     print("Decay parameter = {} has loss {} after 5000 epochs.".format(decay_parameter, decay_parameter_losses[idx][-1]))
     ax.plot(range(epochs), decay_parameter_losses[idx], label="Decay parameter = " + str(decay_parameter))
-legend = ax.legend(loc='upper right')
+legend = ax.legend(loc='center right')
 
 plt.xlabel(str(epochs) +' iterations')
 plt.ylabel('Average epoch loss')
@@ -680,7 +680,7 @@ legend = ax4.legend(loc='lower right')
 plt.xlabel('Epoch number')
 plt.ylabel('Test Accuracy')
 plt.title('Test Accuracy of optimized 3-layer vs 4-layer NN')
-plt.savefig('figures/project_1a_q5a_4.png')
+plt.savefig('figures/project_1a_q5_4.png')
 
 # Train with optimzed hyperparameters
 train_acc_4_opt, test_acc_4_opt, loss_4_opt = training(cv_and_trainX, cv_and_trainY, num_classes=OPTIMAL_NEURON_NUM,
@@ -718,4 +718,4 @@ legend = ax3.legend(loc='lower right')
 plt.xlabel('Epoch number')
 plt.ylabel('Test Accuracy')
 plt.title('Test Accuracy of optimized 3-layer vs optimized 4-layer NN')
-plt.savefig('figures/project_1a_q5a_7.png')
+plt.savefig('figures/project_1a_q5_7.png')
