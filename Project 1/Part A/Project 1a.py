@@ -33,7 +33,6 @@ train_input = np.genfromtxt('ctg_data_cleaned.csv', delimiter= ',')
 
 # Generate feature-scaled training data as input to model
 X, Y_ = train_input[1:, :21], train_input[1:,-1].astype(int)
-X = scale(X, np.min(X, axis=0), np.max(X, axis=0))
 
 # Generate one-hot output as desired output of model
 # Y_ is a list of classes, Y is the one-hot encoded version of Y_
@@ -217,7 +216,8 @@ else:
     idx_split = math.ceil(X_shuffled.shape[0] / 5 * 0.7) * 5
     
     # cv_and_trainX and cv_and_trainY will continually be used in later questions for hyperparameter tuning
-    cv_and_trainX, testX = X_shuffled[:idx_split], X_shuffled[idx_split:]
+    cv_and_trainX = scale(X_shuffled[:idx_split], np.min(X_shuffled[:idx_split], axis=0), np.max(X_shuffled[:idx_split], axis=0)) 
+    testX = scale(X_shuffled[idx_split:], np.min(X_shuffled[:idx_split], axis=0), np.max(X_shuffled[:idx_split], axis=0))
     cv_and_trainY, testY = Y_shuffled[:idx_split], Y_shuffled[idx_split:]
 
     train_acc, test_acc, losses = training(cv_and_trainX, cv_and_trainY, num_classes=10, decay_parameter=10 ** -6, batch_size=32,
