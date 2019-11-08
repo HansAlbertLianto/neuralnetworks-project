@@ -118,7 +118,7 @@ def plot_graph(title, fig_title, question_no, data_list, y_label, legend_labels)
   plt.savefig('figures/project_2b_q{}_{}'.format(question_no, fig_title))
 
 
-def training(encoding_level, cell_used="GRU", no_of_layers=1, use_dropout=False, use_gradient_clip=False):
+def training(encoding_level, cell_used="GRU", no_of_layers=1, use_dropout=False, use_gradient_clip=False, use_timer=False):
   # Read and encode data
   x_train, y_train, x_test, y_test, no_of_words = read_data(encoding_level)
 
@@ -157,6 +157,10 @@ def training(encoding_level, cell_used="GRU", no_of_layers=1, use_dropout=False,
     test_losses = []
     test_accuracies = []
 
+    # Start timer
+    if use_timer:
+      start_time = time.time()
+
     for e in range(NO_OF_EPOCHS):
       # Shuffle the dataset before grouping them into minibatches for gradient updates
       dataset_size = x_train.shape[0]
@@ -178,307 +182,464 @@ def training(encoding_level, cell_used="GRU", no_of_layers=1, use_dropout=False,
       if e % 1 == 0:
         print('iter: %d, train_entropy: %g, train_accuracy: %g, test_entropy: %g, test_accuracy: %g' % (e, train_losses[e], train_accuracies[e], test_losses[e], test_accuracies[e]))
     
-  return train_losses, train_accuracies, test_losses, test_accuracies
+    if use_timer:
+      end_time = time.time() - start_time
+    else:
+      end_time = 0
+
+  return train_losses, train_accuracies, test_losses, test_accuracies, end_time
 
 
 def main():
   # Train Character RNN model
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='char')
+  entropy_losses_char_rnn, train_accuracies_char_rnn, test_losses_char_rnn, test_accuracies_char_rnn, end_time_char = training(encoding_level='char', use_timer=True)
 
   print("=========== Char-RNN ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_char_rnn[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_char_rnn[-1]))
+  print("Final test loss: {}".format(test_losses_char_rnn[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_char_rnn[-1]))
+  print("Time taken to train: {} seconds".format(end_time_char))
   print()
 
   plot_graph(title="Character-RNN Model Learning Curve", 
              fig_title="char_rnn_learning_curve", 
              question_no="3", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_char_rnn, test_losses_char_rnn],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="Character-RNN Model Accuracy vs Epochs", 
              fig_title="char_rnn_accuracy", 
              question_no="3", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_char_rnn, test_accuracies_char_rnn], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
   
   tf.reset_default_graph()
 
   # Train Word RNN model
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='word')
+  entropy_losses_word_rnn, train_accuracies_word_rnn, test_losses_word_rnn, test_accuracies_word_rnn, end_time_word = training(encoding_level='word', use_timer=True)
 
   print("=========== Word-RNN ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_word_rnn[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_word_rnn[-1]))
+  print("Final test loss: {}".format(test_losses_word_rnn[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_word_rnn[-1]))
+  print("Time taken to train: {} seconds".format(end_time_word))
   print()
 
   plot_graph(title="Word-RNN Model Learning Curve", 
              fig_title="word_rnn_learning_curve", 
              question_no="4", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_word_rnn, test_losses_word_rnn],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="Word-RNN Model Accuracy vs Epochs", 
              fig_title="word_rnn_accuracy", 
              question_no="4", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_word_rnn, test_accuracies_word_rnn], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
   
   tf.reset_default_graph()
+
+  plt.clf()
+
+  # Plot histogram
+  models = ['Char-RNN', 'Word-RNN']
+  y_pos = np.arange(len(models))
+  times = [end_time_char, end_time_word]
+
+  plt.bar(models, times, align='center', alpha=0.5)
+  plt.xticks(y_pos, models)
+  plt.ylabel('Time taken to train')
+  plt.title('Time taken to train vs model')
+  plt.savefig('figures/project_2b_q5_rnn_time.png')
+
+  plt.clf()
   
   # Train Character RNN model with Dropout
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='char', use_dropout=True)
+  entropy_losses_char_rnn_dropout, train_accuracies_char_rnn_dropout, test_losses_char_rnn_dropout, test_accuracies_char_rnn_dropout, _ = training(encoding_level='char', use_dropout=True)
 
   print("=========== Char-RNN with Dropout ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_char_rnn_dropout[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_char_rnn_dropout[-1]))
+  print("Final test loss: {}".format(test_losses_char_rnn_dropout[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_char_rnn_dropout[-1]))
   print()
 
   plot_graph(title="Character-RNN Model Learning Curve w/ Dropout", 
              fig_title="char_rnn_learning_curve_dropout", 
              question_no="5", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_char_rnn_dropout, test_losses_char_rnn_dropout],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="Character-RNN Model Accuracy vs Epochs w/ Dropout", 
              fig_title="char_rnn_accuracy_dropout", 
              question_no="5", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_char_rnn_dropout, test_accuracies_char_rnn_dropout], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
   
   tf.reset_default_graph()
   
   # Train Word RNN model with Dropout
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='word', use_dropout=True)
+  entropy_losses_word_rnn_dropout, train_accuracies_word_rnn_dropout, test_losses_word_rnn_dropout, test_accuracies_word_rnn_dropout, _ = training(encoding_level='word', use_dropout=True)
 
   print("=========== Word-RNN with Dropout ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_word_rnn_dropout[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_word_rnn_dropout[-1]))
+  print("Final test loss: {}".format(test_losses_word_rnn_dropout[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_word_rnn_dropout[-1]))
   print()
 
   plot_graph(title="Word-RNN Model Learning Curve w/ Dropout", 
              fig_title="word_rnn_learning_curve_dropout", 
              question_no="5", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_word_rnn_dropout, test_losses_word_rnn_dropout],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="Word-RNN Model Accuracy vs Epochs w/ Dropout", 
              fig_title="word_rnn_accuracy_dropout", 
              question_no="5", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_word_rnn_dropout, test_accuracies_word_rnn_dropout], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
   
   tf.reset_default_graph()
   
   # Train Character RNN model with Vanilla cell
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='char', cell_used="Vanilla")
+  entropy_losses_char_rnn_vanilla, train_accuracies_char_rnn_vanilla, test_losses_char_rnn_vanilla, test_accuracies_char_rnn_vanilla, _ = training(encoding_level='char', cell_used="Vanilla")
 
   print("=========== Char Vanilla-cell RNN ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_char_rnn_vanilla[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_char_rnn_vanilla[-1]))
+  print("Final test loss: {}".format(test_losses_char_rnn_vanilla[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_char_rnn_vanilla[-1]))
   print()
 
   plot_graph(title="Character Vanilla-RNN Model Learning Curve", 
              fig_title="char_rnn_learning_curve_vanilla", 
              question_no="6", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_char_rnn_vanilla, test_losses_char_rnn_vanilla],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="Character Vanilla-RNN Model Accuracy vs Epochs", 
              fig_title="char_rnn_accuracy_vanilla", 
              question_no="6", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_char_rnn_vanilla, test_accuracies_char_rnn_vanilla], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
   
   tf.reset_default_graph()
   
   # Train Character RNN model with LSTM cell
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='char', cell_used="LSTM")
+  entropy_losses_char_rnn_lstm, train_accuracies_char_rnn_lstm, test_losses_char_rnn_lstm, test_accuracies_char_rnn_lstm, _ = training(encoding_level='char', cell_used="LSTM")
 
   print("=========== Char LSTM-cell RNN ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_char_rnn_lstm[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_char_rnn_lstm[-1]))
+  print("Final test loss: {}".format(test_losses_char_rnn_lstm[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_char_rnn_lstm[-1]))
   print()
 
   plot_graph(title="Character LSTM-cell RNN Model Learning Curve", 
              fig_title="char_rnn_learning_curve_lstm", 
              question_no="6", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_char_rnn_lstm, test_losses_char_rnn_lstm],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="Character LSTM-cell RNN Model Accuracy vs Epochs", 
              fig_title="char_rnn_accuracy_lstm", 
              question_no="6", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_char_rnn_lstm, test_accuracies_char_rnn_lstm], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
   
   tf.reset_default_graph()
   
   # Train 2-layer Character RNN model
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='char', no_of_layers=2)
+  entropy_losses_char_rnn_2_layer, train_accuracies_char_rnn_2_layer, test_losses_char_rnn_2_layer, test_accuracies_char_rnn_2_layer, _ = training(encoding_level='char', no_of_layers=2)
 
   print("=========== 2-layer Char RNN ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_char_rnn_2_layer[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_char_rnn_2_layer[-1]))
+  print("Final test loss: {}".format(test_losses_char_rnn_2_layer[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_char_rnn_2_layer[-1]))
   print()
 
   plot_graph(title="2-layer Character RNN Model Learning Curve", 
              fig_title="char_rnn_learning_curve_for_2_layers", 
              question_no="6", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_char_rnn_2_layer, test_losses_char_rnn_2_layer],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="2-layer Character RNN Model Accuracy vs Epochs", 
              fig_title="char_rnn_accuracy_for_2_layers", 
              question_no="6", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_char_rnn_2_layer, test_accuracies_char_rnn_2_layer], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
   
   tf.reset_default_graph()
   
   # Train Character RNN model with gradient clipping
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='char', use_gradient_clip=True)
+  entropy_losses_char_rnn_grad_clip, train_accuracies_char_rnn_grad_clip, test_losses_char_rnn_grad_clip, test_accuracies_char_rnn_grad_clip, _ = training(encoding_level='char', use_gradient_clip=True)
 
   print("=========== Char RNN with Gradient Clipping ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_char_rnn_grad_clip[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_char_rnn_grad_clip[-1]))
+  print("Final test loss: {}".format(test_losses_char_rnn_grad_clip[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_char_rnn_grad_clip[-1]))
   print()
 
   plot_graph(title="Character RNN Model with Gradient Clipping Learning Curve", 
              fig_title="char_rnn_learning_curve_gradient_clipping", 
              question_no="6", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_char_rnn_grad_clip, test_losses_char_rnn_grad_clip],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="Character RNN Model with Gradient Clipping Accuracy vs Epochs", 
              fig_title="char_rnn_accuracy_gradient_clipping", 
              question_no="6", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_char_rnn_grad_clip, test_accuracies_char_rnn_grad_clip], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
   
   tf.reset_default_graph()
   
   # Train Word RNN model with Vanilla cell
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='word', cell_used="Vanilla")
+  entropy_losses_word_rnn_vanilla, train_accuracies_word_rnn_vanilla, test_losses_word_rnn_vanilla, test_accuracies_word_rnn_vanilla, _ = training(encoding_level='word', cell_used="Vanilla")
 
   print("=========== Word Vanilla-cell RNN ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_word_rnn_vanilla[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_word_rnn_vanilla[-1]))
+  print("Final test loss: {}".format(test_losses_word_rnn_vanilla[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_word_rnn_vanilla[-1]))
   print()
 
   plot_graph(title="Word Vanilla-RNN Model Learning Curve", 
              fig_title="word_rnn_learning_curve_vanilla", 
              question_no="6", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_word_rnn_vanilla, test_losses_word_rnn_vanilla],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="Word Vanilla-RNN Model Accuracy vs Epochs", 
              fig_title="word_rnn_accuracy_vanilla", 
              question_no="6", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_word_rnn_vanilla, test_accuracies_word_rnn_vanilla], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
   
   tf.reset_default_graph()
   
   # Train Word RNN model with LSTM cell
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='word', cell_used="LSTM")
+  entropy_losses_word_rnn_lstm, train_accuracies_word_rnn_lstm, test_losses_word_rnn_lstm, test_accuracies_word_rnn_lstm, _ = training(encoding_level='word', cell_used="LSTM")
 
   print("=========== Word LSTM-cell RNN ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_word_rnn_lstm[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_word_rnn_lstm[-1]))
+  print("Final test loss: {}".format(test_losses_word_rnn_lstm[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_word_rnn_lstm[-1]))
   print()
 
   plot_graph(title="Word LSTM-cell RNN Model Learning Curve", 
              fig_title="word_rnn_learning_curve_lstm", 
              question_no="6", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_word_rnn_lstm, test_losses_word_rnn_lstm],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="Word LSTM-cell RNN Model Accuracy vs Epochs", 
              fig_title="word_rnn_accuracy_lstm", 
              question_no="6", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_word_rnn_lstm, test_accuracies_word_rnn_lstm], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
   
   tf.reset_default_graph()
   
   # Train 2-layer Word RNN model
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='word', no_of_layers=2)
+  entropy_losses_word_rnn_2_layer, train_accuracies_word_rnn_2_layer, test_losses_word_rnn_2_layer, test_accuracies_word_rnn_2_layer, _ = training(encoding_level='word', no_of_layers=2)
 
   print("=========== 2-layer Word RNN ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_word_rnn_2_layer[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_word_rnn_2_layer[-1]))
+  print("Final test loss: {}".format(test_losses_word_rnn_2_layer[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_word_rnn_2_layer[-1]))
   print()
 
   plot_graph(title="2-layer Word RNN Model Learning Curve", 
              fig_title="word_rnn_learning_curve_for_2_layers", 
              question_no="6", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_word_rnn_2_layer, test_losses_word_rnn_2_layer],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="2-layer Word RNN Model Accuracy vs Epochs", 
              fig_title="word_rnn_accuracy_for_2_layers", 
              question_no="6", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_word_rnn_2_layer, test_accuracies_word_rnn_2_layer], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
   
   tf.reset_default_graph()
   
   # Train Word RNN model with gradient clipping
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='word', use_gradient_clip=True)
+  entropy_losses_word_rnn_grad_clip, train_accuracies_word_rnn_grad_clip, test_losses_word_rnn_grad_clip, test_accuracies_word_rnn_grad_clip, _ = training(encoding_level='word', use_gradient_clip=True)
 
   print("=========== Word RNN with Gradient Clipping ===========")
-  print("Final entropy loss: {}".format(entropy_losses[-1]))
-  print("Final train accuracy: {}".format(train_accuracies[-1]))
-  print("Final test loss: {}".format(test_losses[-1]))
-  print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Final entropy loss: {}".format(entropy_losses_word_rnn_grad_clip[-1]))
+  print("Final train accuracy: {}".format(train_accuracies_word_rnn_grad_clip[-1]))
+  print("Final test loss: {}".format(test_losses_word_rnn_grad_clip[-1]))
+  print("Final test accuracy: {}".format(test_accuracies_word_rnn_grad_clip[-1]))
   print()
 
   plot_graph(title="Word RNN Model with Gradient Clipping Learning Curve", 
              fig_title="word_rnn_learning_curve_gradient_clipping", 
              question_no="6", 
-             data_list=[entropy_losses, test_losses],
+             data_list=[entropy_losses_word_rnn_grad_clip, test_losses_word_rnn_grad_clip],
              y_label="Entropy Loss",
              legend_labels=["Train", "Test"])
   plot_graph(title="Word RNN Model with Gradient Clipping Accuracy vs Epochs", 
              fig_title="word_rnn_accuracy_gradient_clipping", 
              question_no="6", 
-             data_list=[train_accuracies, test_accuracies], 
+             data_list=[train_accuracies_word_rnn_grad_clip, test_accuracies_word_rnn_grad_clip], 
              y_label="Accuracy", 
              legend_labels=["Train", "Test"])
+  
+  # Comparison of different methods
+  print("Plotting more comparison graphs...")
+
+  plot_graph(title="Char RNN Model with and without Dropout (Loss)", 
+             fig_title="char_rnn_learning_curve_with_and_without_dropout", 
+             question_no="5", 
+             data_list=[entropy_losses_char_rnn,
+                        entropy_losses_char_rnn_dropout],
+             y_label="Loss",
+             legend_labels=["GRU", "GRU w/ Dropout (0.8)"])
+  
+  plot_graph(title="Char RNN Model with and without Dropout (Accuracy)", 
+             fig_title="char_rnn_accuracy_with_and_without_dropout", 
+             question_no="5", 
+             data_list=[test_accuracies_char_rnn,
+                        test_accuracies_char_rnn_dropout],
+             y_label="Test Accuracy",
+             legend_labels=["GRU", "GRU w/ Dropout (0.8)"])
+  
+  plot_graph(title="Word RNN Model with and without Dropout (Loss)", 
+             fig_title="word_rnn_learning_curve_with_and_without_dropout", 
+             question_no="5", 
+             data_list=[entropy_losses_word_rnn,
+                        entropy_losses_word_rnn_dropout],
+             y_label="Loss",
+             legend_labels=["GRU", "GRU w/ Dropout (0.8)"])
+  
+  plot_graph(title="Word RNN Model with and without Dropout (Accuracy)", 
+             fig_title="word_rnn_accuracy_with_and_without_dropout", 
+             question_no="5", 
+             data_list=[test_accuracies_word_rnn,
+                        test_accuracies_word_rnn_dropout],
+             y_label="Test Accuracy",
+             legend_labels=["GRU", "GRU w/ Dropout (0.8)"])
+  
+  plot_graph(title="Char RNN Model with Different Cells (Loss)", 
+             fig_title="char_rnn_learning_curve_with_different_cells", 
+             question_no="6", 
+             data_list=[entropy_losses_char_rnn,
+                        entropy_losses_char_rnn_vanilla,
+                        entropy_losses_char_rnn_lstm],
+             y_label="Loss",
+             legend_labels=["GRU", "Vanilla (BasicRNNCell)", "LSTM"])
+  
+  plot_graph(title="Char RNN Model with Different Cells (Accuracy)", 
+             fig_title="char_rnn_accuracy_with_different_cells", 
+             question_no="6", 
+             data_list=[test_accuracies_char_rnn,
+                        test_accuracies_char_rnn_vanilla,
+                        test_accuracies_char_rnn_lstm],
+             y_label="Test Accuracy",
+             legend_labels=["GRU", "Vanilla (BasicRNNCell)", "LSTM"])
+  
+  plot_graph(title="Word RNN Model with Different Cells (Loss)", 
+             fig_title="word_rnn_learning_curve_with_different_cells", 
+             question_no="6", 
+             data_list=[entropy_losses_word_rnn,
+                        entropy_losses_word_rnn_vanilla,
+                        entropy_losses_word_rnn_lstm],
+             y_label="Loss",
+             legend_labels=["GRU", "Vanilla (BasicRNNCell)", "LSTM"])
+  
+  plot_graph(title="Word RNN Model with Different Cells (Accuracy)", 
+             fig_title="word_rnn_accuracy_with_different_cells", 
+             question_no="6", 
+             data_list=[test_accuracies_word_rnn,
+                        test_accuracies_word_rnn_vanilla,
+                        test_accuracies_word_rnn_lstm],
+             y_label="Test Accuracy",
+             legend_labels=["GRU", "Vanilla (BasicRNNCell)", "LSTM"])
+  
+  plot_graph(title="Char RNN Model with 1 layer vs 2 layers (Loss)", 
+             fig_title="char_rnn_learning_curve_with_1_and_2_layers", 
+             question_no="6", 
+             data_list=[entropy_losses_char_rnn,
+                        entropy_losses_char_rnn_2_layer],
+             y_label="Loss",
+             legend_labels=["GRU (1 layer)", "GRU (2 layers)"])
+  
+  plot_graph(title="Char RNN Model with 1 layer vs 2 layers (Accuracy)", 
+             fig_title="char_rnn_accuracy_with_1_and_2_layers", 
+             question_no="6", 
+             data_list=[test_accuracies_char_rnn,
+                        test_accuracies_char_rnn_2_layer],
+             y_label="Test Accuracy",
+             legend_labels=["GRU (1 layer)", "GRU (2 layers)"])
+  
+  plot_graph(title="Word RNN Model with 1 layer vs 2 layers (Loss)", 
+             fig_title="word_rnn_learning_curve_with_1_and_2_layers", 
+             question_no="6", 
+             data_list=[entropy_losses_word_rnn,
+                        entropy_losses_word_rnn_2_layer],
+             y_label="Loss",
+             legend_labels=["GRU (1 layer)", "GRU (2 layers)"])
+  
+  plot_graph(title="Word RNN Model with 1 layer vs 2 layers (Accuracy)", 
+             fig_title="word_rnn_accuracy_with_1_and_2_layers", 
+             question_no="6", 
+             data_list=[test_accuracies_word_rnn,
+                        test_accuracies_word_rnn_2_layer],
+             y_label="Test Accuracy",
+             legend_labels=["GRU (1 layer)", "GRU (2 layers)"])
+  
+  plot_graph(title="Char RNN Model with and without Gradient Clipping (Loss)", 
+             fig_title="char_rnn_learning_curve_with_and_without_grad_clip", 
+             question_no="6", 
+             data_list=[entropy_losses_char_rnn,
+                        entropy_losses_char_rnn_grad_clip],
+             y_label="Loss",
+             legend_labels=["GRU (w/out Grad Clip)", "GRU (w/ Grad Clip)"])
+  
+  plot_graph(title="Char RNN Model with and without Gradient Clipping (Accuracy)", 
+             fig_title="char_rnn_accuracy_with_and_without_grad_clip", 
+             question_no="6", 
+             data_list=[test_accuracies_char_rnn,
+                        test_accuracies_char_rnn_grad_clip],
+             y_label="Test Accuracy",
+             legend_labels=["GRU (w/out Grad Clip)", "GRU (w/ Grad Clip)"])
+  
+  plot_graph(title="Word RNN Model with and without Gradient Clipping (Loss)", 
+             fig_title="word_rnn_learning_curve_with_and_without_grad_clip", 
+             question_no="6", 
+             data_list=[entropy_losses_word_rnn,
+                        entropy_losses_word_rnn_grad_clip],
+             y_label="Loss",
+             legend_labels=["GRU (w/out Grad Clip)", "GRU (w/ Grad Clip)"])
+  
+  plot_graph(title="Word RNN Model with and without Gradient Clipping (Accuracy)", 
+             fig_title="word_rnn_accuracy_with_and_without_grad_clip", 
+             question_no="6", 
+             data_list=[test_accuracies_word_rnn,
+                        test_accuracies_word_rnn_grad_clip],
+             y_label="Test Accuracy",
+             legend_labels=["GRU (w/out Grad Clip)", "GRU (w/ Grad Clip)"])
 
 
 if __name__ == "__main__":

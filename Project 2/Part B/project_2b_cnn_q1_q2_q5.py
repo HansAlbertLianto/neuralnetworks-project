@@ -106,7 +106,7 @@ def plot_graph(title, fig_title, question_no, data_list, y_label, legend_labels)
   plt.title(title)
   plt.savefig('figures/project_2b_q{}_{}'.format(question_no, fig_title))
 
-def training(encoding_level, use_dropout=False):
+def training(encoding_level, use_dropout=False, use_timer=False):
   # Read and encode data
   x_train, y_train, x_test, y_test, no_of_words = read_data(encoding_level)
 
@@ -136,13 +136,17 @@ def training(encoding_level, use_dropout=False):
     test_losses = []
     test_accuracies = []
 
+    # Start timer
+    if use_timer:
+      start_time = time.time()
+
     for e in range(NO_OF_EPOCHS):
       # Shuffle the dataset before grouping them into minibatches for gradient updates
       dataset_size = x_train.shape[0]
       idx = np.arange(dataset_size)
       np.random.shuffle(idx)
       x_shuffled, y_shuffled = x_train[idx], y_train[idx]
-      
+
       for start, end in zip(range(0, len(x_train), BATCH_SIZE), range(BATCH_SIZE, len(x_train), BATCH_SIZE)):
         _ = sess.run(train_op, feed_dict={x: x_shuffled[start:end], y_: y_shuffled[start:end], dropout_rate: 0.2})
       
@@ -157,17 +161,23 @@ def training(encoding_level, use_dropout=False):
       if e % 1 == 0:
         print('iter: %d, train_entropy: %g, train_accuracy: %g, test_entropy: %g, test_accuracy: %g' % (e, train_losses[e], train_accuracies[e], test_losses[e], test_accuracies[e]))
     
-  return train_losses, train_accuracies, test_losses, test_accuracies
+    if use_timer:
+      end_time = time.time() - start_time
+    else:
+      end_time = 0
+
+  return train_losses, train_accuracies, test_losses, test_accuracies, end_time
 
 def main():
   # Train Character CNN model
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='char')
+  entropy_losses, train_accuracies, test_losses, test_accuracies, end_time_char = training(encoding_level='char', use_timer=True)
 
   print("=========== Char-CNN ===========")
   print("Final entropy loss: {}".format(entropy_losses[-1]))
   print("Final train accuracy: {}".format(train_accuracies[-1]))
   print("Final test loss: {}".format(test_losses[-1]))
   print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Time taken to train: {} seconds".format(end_time_char))
   print()
 
   plot_graph(title="Character-CNN Model Learning Curve", 
@@ -184,13 +194,14 @@ def main():
              legend_labels=["Train", "Test"])
 
   # Train Word CNN model
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='word')
+  entropy_losses, train_accuracies, test_losses, test_accuracies, end_time_word = training(encoding_level='word', use_timer=True)
   
   print("=========== Word-CNN ===========")
   print("Final entropy loss: {}".format(entropy_losses[-1]))
   print("Final train accuracy: {}".format(train_accuracies[-1]))
   print("Final test loss: {}".format(test_losses[-1]))
   print("Final test accuracy: {}".format(test_accuracies[-1]))
+  print("Time taken to train: {} seconds".format(end_time_word))
   print()
 
   plot_graph(title="Word-CNN Model Learning Curve",
@@ -205,9 +216,24 @@ def main():
              data_list=[train_accuracies, test_accuracies],
              y_label="Accuracy",
              legend_labels=["Train", "Test"])
+  
+  plt.clf()
+
+  # Plot histogram
+  models = ['Char-CNN', 'Word-CNN']
+  y_pos = np.arange(len(models))
+  times = [end_time_char, end_time_word]
+
+  plt.bar(models, times, align='center', alpha=0.5)
+  plt.xticks(y_pos, models)
+  plt.ylabel('Time taken to train')
+  plt.title('Time taken to train vs model')
+  plt.savefig('figures/project_2b_q5_cnn_time.png')
+
+  plt.clf()
 
   # Train Character CNN model with dropout
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='char', use_dropout=True)
+  entropy_losses, train_accuracies, test_losses, test_accuracies, _ = training(encoding_level='char', use_dropout=True)
   
   print("=========== Char-CNN with Dropout ===========")
   print("Final entropy loss: {}".format(entropy_losses[-1]))
@@ -230,7 +256,7 @@ def main():
              legend_labels=["Train", "Test"])
 
   # Train Word CNN model
-  entropy_losses, train_accuracies, test_losses, test_accuracies = training(encoding_level='word', use_dropout=True)
+  entropy_losses, train_accuracies, test_losses, test_accuracies, _ = training(encoding_level='word', use_dropout=True)
   
   print("=========== Word-CNN with Dropout ===========")
   print("Final entropy loss: {}".format(entropy_losses[-1]))
