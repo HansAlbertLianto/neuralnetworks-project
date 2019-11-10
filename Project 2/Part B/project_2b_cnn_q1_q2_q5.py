@@ -29,7 +29,10 @@ def read_data(encoding_level):
   raw_data_test = pd.read_csv('test_medium.csv', names=["Category", "Wikipedia Page", "Paragraph Text"])
 
   # Slice Pandas dataframe to get input and output attribute
-  input_text_train, input_text_test = pd.Series(raw_data_train["Paragraph Text"]), pd.Series(raw_data_test["Paragraph Text"])
+  if encoding_level == "char":
+    input_text_train, input_text_test = pd.Series(raw_data_train["Wikipedia Page"]), pd.Series(raw_data_test["Wikipedia Page"])
+  elif encoding_level == "word":
+    input_text_train, input_text_test = pd.Series(raw_data_train["Paragraph Text"]), pd.Series(raw_data_test["Paragraph Text"])
   output_label_train, output_label_test = pd.Series(raw_data_train["Category"]), pd.Series(raw_data_test["Category"])
 
   # Encode character to text
